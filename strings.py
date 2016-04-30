@@ -11,7 +11,7 @@ from PyQt5 import QtCore
 def about(__version__):
     string = """<b>OptiSim</b> Version {} by Michael Richter
                 <p>Copyright &copy; 2016-04 University of Oldenburg. 
-                All rights reserved.
+                Published under GNU General Public Licence V3 (see licence file).
                 <p>This application can be used to perform
                 optical simulations.
                 <p>Based partly on the work of Volker Lorrmann & Steve Byrnes. Color tool based on ColorPy by Mark Kness.
