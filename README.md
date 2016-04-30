@@ -1,17 +1,3 @@
-**********************************************************
-*  _____           __        ____                        *
-* /\  __`\        /\ \__  __/\  _`\   __                 *
-* \ \ \/\ \  _____\ \ ,_\/\_\ \,\L\_\/\_\    ___ ___     *
-*  \ \ \ \ \/\ '__`\ \ \/\/\ \/_\__ \\/\ \ /' __` __`\   *
-*   \ \ \_\ \ \ \L\ \ \ \_\ \ \/\ \L\ \ \ \/\ \/\ \/\ \  *
-*    \ \_____\ \ ,__/\ \__\\ \_\ `\____\ \_\ \_\ \_\ \_\ *
-*     \/_____/\ \ \/  \/__/ \/_/\/_____/\/_/\/_/\/_/\/_/ *
-*              \ \_\                                     *
-*               \/_/                                     *
-*                     Version 0.5.1                      *
-*                   by Michael Richter                   *
-**********************************************************
-
 What is OptiSim?
 ================
 
@@ -39,4 +25,5 @@ OptiSim is distributed in the hope that it will be useful, but WITHOUT ANY WARRA
 Thanks to:
 ==========
 
-Volker Lorrmann for first ideas, Steven Byrnes' python tmm package for giving ideas, Mark Knees for python package Colorpy I took some lines from, developer of ERIC IDE, and many more ... 
+Volker Lorrmann for first ideas, Steven Byrnes' python tmm package for giving ideas, Mark Knees for python package Colorpy I took some lines from, 
+developer of ERIC IDE, and many more ... 
