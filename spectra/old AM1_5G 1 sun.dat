@@ -1,0 +1,73 @@
+> Air Mass 1.5 global spectrum, on a surface facing the sun,
+> tilted 37° to a horizontal plane
+> data from Hulstrom, Bird and Riordan, Solar Cells, vol 15, 365-391 (1985)
+> also in cited in: Partain, Solar Cells and their applications, Wiley 1995, p. 532
+> first column is wavelength in nm
+> second column, is incident power, in W/m2, in a wavelength range 
+> from half-away the preceeding lambda-interval, to half-away the next lambda-interval (roughly)
+> (exactly:) only the even numbered wavelengths of the Hulstrom table are retained here;
+> the incident power is from integrating the Hulstrom-values (trapezium rule)
+> from the preceeding to the next odd-numbered wavelength
+> the total incident power of the Hulstrom AM1.5G spectrum is 962.6 W/cm2
+> in this table, the spectrum is normalised to 1 sun incident power (1000 W/m2)
+> by multiplying the second column with 1000/962.6
+310	0.505674804
+320	1.793626191
+330	3.573487223
+340	4.254213294
+350	7.335531153
+370	12.8421142
+390	15.85486598
+410	22.59511894
+430	23.1768917
+450	29.80442618
+470	31.98867122
+490	31.31547703
+510	31.07134025
+530	30.93992194
+550	46.24781764
+590	57.84898976
+630	57.80431793
+670	53.40881696
+710	33.81637267
+724	24.22553709
+753	21.58283434
+763	8.741655132
+780	35.14052903
+816	22.04710978
+832	14.36563161
+860	38.55595067
+905	28.13650446
+925	9.535619115
+937	5.468352263
+965	15.96176673
+994	42.8626274
+1070	35.71513351
+1120	6.713242078
+1137	6.786794776
+1180	16.44546922
+1235	40.44437465
+1320	14.2056441
+1395	2.14300151
+1463	3.086512258
+1497	8.000310417
+1539	10.33025837
+1578	8.649402595
+1610	9.027035448
+1646	11.13263728
+1740	18.22901827
+1860	1.065890803
+1960	1.853881227
+2005	3.076642899
+2065	5.021166399
+2148	7.96291074
+2270	11.06936949
+2450	4.62239234
+2537	1.998753032
+2973	0.417214178
+3056	0.576682247
+3156	0.796613127
+3245	0.680881903
+3344	1.095654713
+3573	3.636962787
+4045	2.414356947

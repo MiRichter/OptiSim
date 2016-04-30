@@ -1,0 +1,18 @@
+> monochromatic spectrum, lambda = 	820	nm	linewidth = 	5	nm
+> number of photons adapted to yield JL = 	20	mA/cm2, if	QE =	100	%
+> first column	lambda	nm			
+> second column	spectrum	W/m2	from half-away preceeding	to half-away	next lambda-interval
+> sum of second column =	302.44	W/m2			
+814	0.000000				
+815	1.260163				
+816	8.821138				
+817	25.203252				
+818	41.585366				
+819	49.146341				
+820	50.406504				
+821	49.146341				
+822	41.585366				
+823	25.203252				
+824	8.821138				
+825	1.260163
+826	0.000000

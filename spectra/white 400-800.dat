@@ -1,0 +1,49 @@
+> White spectrum: constant incident power between 400 nm and 800 nm
+> no incident power outside this interval
+> first column is wavelength in nm
+> second column, is incident power, in W/m2, in a wavelength range from half-away the preceeding lambda-interval, to half-away the next lambda-interval
+> the total incident power (summing the data in the second column) is 1 sun or 1000 W/cm2
+> 
+390	0
+400	12.5
+410	25
+420	25
+430	25
+440	25
+450	25
+460	25
+470	25
+480	25
+490	25
+500	25
+510	25
+520	25
+530	25
+540	25
+550	25
+560	25
+570	25
+580	25
+590	25
+600	25
+610	25
+620	25
+630	25
+640	25
+650	25
+660	25
+670	25
+680	25
+690	25
+700	25
+710	25
+720	25
+730	25
+740	25
+750	25
+760	25
+770	25
+780	25
+790	25
+800	12.5
+810	0

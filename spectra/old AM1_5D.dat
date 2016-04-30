@@ -1,0 +1,67 @@
+> Air Mass 1.5 direct spectrum, on a horizontal plane
+> data from Hulstrom, Bird and Riordan, Solar Cells, vol 15, 365-391 (1985)
+> also in cited in: Partain, Solar Cells and their applications, Wiley 1995, p. 532
+> first column is wavelength in nm
+> second column, is incident power, in W/m2, in a wavelength range from half-away the preceeding lambda-interval, to half-away the next lambda-interval (roughly)
+> (exactly:) only the even numbered wavelengths of the Hulstrom table are retained here; the incident power is from integrating the Hulstrom-values (trapezium rule) from the preceeding to the next odd-numbered wavelength
+> the total incident power (summing the data in the second column) is 767.2 W/m2
+310	0.18925
+320	0.70925
+330	1.4015
+340	1.75275
+350	3.25925
+370	6.2545
+390	8.409
+410	12.797
+430	13.8655
+450	18.5125
+470	20.1645
+490	20.415
+510	20.858
+530	21.3185
+550	32.819
+590	42.248
+630	42.747
+670	40.133
+710	25.8932
+724	19.4895
+753	17.2737
+763	7.05625
+780	28.2606
+816	18.172
+832	11.964
+860	32.085
+905	23.58675
+925	8.09425
+937	4.72885
+965	13.64885
+994	36.1576
+1070	30.4275
+1120	5.981
+1137	6.0559
+1180	14.55265
+1235	35.68475
+1320	12.639
+1395	1.98075
+1463	2.8461
+1497	7.3176
+1539	9.3689
+1578	7.8632
+1610	8.2922
+1646	10.224
+1740	16.795
+1860	0.999
+1960	1.7235
+2005	2.8615
+2065	4.6645
+2148	7.3786
+2270	10.2474
+2450	4.2926
+2537	1.844
+2973	0.384
+3056	0.5335
+3156	0.7368
+3245	0.6261
+3344	1.0081
+3573	3.3468
+4045	2.226

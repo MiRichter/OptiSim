@@ -1,0 +1,19 @@
+> monochromatic spectrum, lambda = 880 nm, linewidth = 5 nm; 1 sun
+> first column: lambda (nm)	
+> second column: spectrum (W/m2, from half-away preceeding to half-away next lambda-interval)
+> sum of second column equals 1000 W/m2
+874	0.000000
+875	4.166667
+876	29.166667
+877	83.333333
+878	137.500000
+879	162.500000
+880	166.666667
+881	162.500000
+882	137.500000
+883	83.333333
+884	29.166667
+885	4.166667
+886	0.000000
+
+
