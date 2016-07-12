@@ -606,8 +606,13 @@ class Optics:
             I_bw_diff_r = H_R12 * R_12 * I_fw1(xend)    
                 correct?
             '''
-            H_R01 = self.LayerResults[key].sroughHazeR
-            H_T01 = self.LayerResults[key].sroughHazeT
+            if self.LayerResults[key].srough:
+                H_R01 = self.LayerResults[key].sroughHazeR
+                H_T01 = self.LayerResults[key].sroughHazeT
+            else:
+                H_R01 = 0
+                H_T01 = 0
+                
             print('H_T_{} = {}'.format(key, H_T01))
             if k == 0:
                 cri0 = 1 + 0j
@@ -625,8 +630,12 @@ class Optics:
             else:
                 cri2 = self.LayerResults[self.names[k+1]].cri
                 theta2 = self.LayerResults[self.names[k+1]].theta
-                H_R12 = self.LayerResults[self.names[k+1]].sroughHazeR
-                H_T12 = self.LayerResults[self.names[k+1]].sroughHazeT
+                if self.LayerResults[self.names[k+1]].srough:
+                    H_R12 = self.LayerResults[self.names[k+1]].sroughHazeR
+                    H_T12 = self.LayerResults[self.names[k+1]].sroughHazeT
+                else:
+                    H_R12 = 0
+                    H_T12 = 0
                 
             R_01 = np.abs(r_ij(self.pol, 0, 0, wvl, cri0, cri1, theta0, theta1))**2
             T_01 = 1 - R_01

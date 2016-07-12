@@ -324,7 +324,7 @@ class LayerStack:
         logging.info('... final stack creation time {:.3f}'.format(self.creationTime))
         
         
-        print(self.names)
+        #print(self.names)
 
 
         

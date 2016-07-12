@@ -46,7 +46,7 @@ class BatchDlg(QDialog, Ui_Dialog):
         for layer in stack:
             self.layers.append(layer.name)
             
-        self.materialParameters = ['thickness', 'constant n', 'constant k', 'roughness', 'haze', 'diffusion length']
+        self.materialParameters = ['thickness', 'constant n', 'constant k', 'roughness', 'Haze R', 'Haze T', 'diffusion length']
         self.stackParameters = ['angle of incidence']
        
         self.variables = batchVariables.copy()
@@ -115,7 +115,7 @@ class BatchDlg(QDialog, Ui_Dialog):
                 stepSB.setSingleStep(0.01)
                 stopSB.setRange(0.01, 20.0)
                 stopSB.setSingleStep(0.01)
-            elif variable[2] == 'haze':
+            elif variable[2] == 'Haze R' or variable[2]  == 'Haze T':
                 startSB.setRange(0.0, 1.0)
                 startSB.setSingleStep(1)
                 stepSB.setRange(0.01, 1.0)
@@ -167,6 +167,7 @@ class BatchDlg(QDialog, Ui_Dialog):
                 self.variables[self.currentVariable][1] = 'excitation'
         
             self.updateLayout()
+            print(self.layers[i])
     
     @pyqtSlot(int)
     def cat3Changed(self, i):
@@ -182,7 +183,7 @@ class BatchDlg(QDialog, Ui_Dialog):
                 range = [100, 10, 200]
             elif parameter == 'constant n' or parameter == 'constant k':
                 range = [1, 0.1, 2]
-            elif parameter == 'haze':
+            elif parameter == 'Haze R' or parameter == 'Haze T':
                 range = [0, 0.1, 1]
             elif parameter == 'angle of incidence':
                 range = [0, 10, 90]

@@ -53,7 +53,7 @@ from classes.optics import Optics
 from classes.resulttablemodel import ResultTableModel
 from classes.navtoolbar import NavToolBar as NavigationToolbar
 
-__version__ = "0.5.1"
+__version__ = "0.5.2"
 
  
 def num(s):
@@ -78,7 +78,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super().__init__(parent)
         self.setupUi(self)
         
-        self.showMaximized()
         self.setWindowTitle("OptiSim - Version: " + __version__)
 
         # additional widget properties
@@ -176,231 +175,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         ])
         
         self.batchVariables = []
-        
-        self.loadMaterialDB()
-    
+            
         #create raw buttongoup for layer buttons
         self.ButtonGroup = QtWidgets.QButtonGroup(self.StackFrame)
-        """
-        QScrollArea QWidget {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0 #E0E0E0, stop: 1 #FFFFFF);
-        }
-        QTabWidget{
-        background-color: lightgrey;
-        border: 2px solid gray;
-        border-radius: 5px;
-        margin-top: 1ex; /* leave space at the top for the title */
-        }
-        QPushButton {
-        border-style: inset;
-        border-width: 1px;
-        border-radius: 1px;
-        border-color: black;
-        font: bold 12px;
-        min-width: 8em;
-        padding: 6px;
-        background: yellow;
-        color: black;
-        }
-                
-        QGroupBox {
-        border: 2px solid gray;
-        border-radius: 5px;
-        margin-top: 1ex; /* leave space at the top for the title */
-        }
-        QGroupBox::title {
-        subcontrol-origin: margin;
-        subcontrol-position: top center; /* position at the top center */
-        padding: 0 3px;
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 #FFOECE, stop: 1 #FFFFFF);
-        }
-        QGroupBox::indicator {
-        width: 13px;
-        height: 13px;
-        }
-
-        QLineEdit {
-        background-color: white;
-        border: 2px solid gray;
-        border-radius: 5px;
-        padding: 0 8px;
-        selection-background-color: darkgray;
-        }
-
-        """
-        MainWindowStyleSheet = """
-        QMainWindow{
-        background-color: white
-        }
-        QWidget{
-        background-color: white;
-        }
-        QMainWindow::separator {
-        background: lightblue;
-        width: 3px; /* when vertical */
-        height: 3px; /* when horizontal */
-        }
-        QMainWindow::separator:hover {
-        background: darkblue;
-        }
-        QPushButton:hover{
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 rgb(82,169,248), stop: 1 rgb(147,219,251));
-        }
-        QDockWidget::title {
-        background: rgb(222,244,254);
-        }
-        QLineEdit{
-        border: 1px solid rgb(0,103,176);
-        border-radius: 5px;
-        margin: 2px;
-        }
-        QSpinBox{
-        border: 1px solid rgb(0,103,176);
-        border-radius: 5px;
-        }
-        QDoubleSpinBox{
-        border: 1px solid rgb(0,103,176);
-        border-radius: 5px;
-        }
-        QComboBox{
-        border: 1px solid rgb(0,103,176);
-        border-radius: 5px;
-        }
         
-        QPushButton {
-        border: 0px;
-        border-radius: 4px;
-        background-color: rgb(82,169,248);
-        font: bold 12px;
-        color: white;
-        padding: 6px;
-        }
-        QPushButton:pressed {
-        background-color: rgb(147,219,251);
-        }
-        QPushButton:flat {
-        border: none; /* no border for a flat push button */
-        }
-        QPushButton:default {
-        border-color: navy; /* make the default button prominent */
-        }
-        QToolBar {
-        background: white
-        }
-        QMenu {
-        background-color: white;
-        margin: 5px; /* some spacing around the menu */
-        }
-        QMenu::item {
-        padding: 2px 25px 2px 20px;
-        border: 2px solid transparent; /* reserve space for selection border */
-        }
-        QMenu::item:selected {
-        border-color: darkblue;
-        background: rgb(222,244,254);
-        }
-        QMenu::icon:checked { /* appearance of a 'checked' icon */
-        background: gray;
-        border: 1px inset gray;
-        position: absolute;
-        top: 1px;
-        right: 1px;
-        bottom: 1px;
-        left: 1px;
-        }
-        QMenu::separator {
-        height: 1px;
-        background: darkblue;
-        margin-left: 2px;
-        margin-right: 2px;
-        }
-        QMenu::indicator {
-        width: 20px;
-        height: 20px;
-        }
-        QMenuBar {
-        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                      stop:0 rgb(222,244,254), stop:1 white);
-        }
-        QMenuBar::item {
-        spacing: 3px; /* spacing between menu bar items */
-        padding: 1px 4px;
-        background: transparent;
-        border-radius: 4px;
-        }
-        QMenuBar::item:selected { /* when selected using mouse or keyboard */
-        background: #a8a8a8;
-        }
-        QMenuBar::item:pressed {
-        background: #888888;
-        }
-        QStatusBar {
-        background-color: rgb(222,244,254);
-        }
-        QStatusBar QLabel {
-        border: 3px solid white;
-        }
-        QListWidget {
-        border: 1px solid rgb(0,103,176);
-        border-radius: 5px;
-        }
-        QListWidget:item:selected {
-        background-color: rgba(9,128,237,90);
-        }
-        
-        QTabWidget::pane { /* The tab widget frame */
-        border: 2px solid rgb(42,141,212);
-        border-radius: 4px;
-        }
-        QTabWidget::tab-bar {
-            left: 5px; /* move to the right by 5px */
-        }
-        /* Style the tab using the tab sub-control. Note that
-            it reads QTabBar _not_ QTabWidget */
-            
-        QTabBar::tab {
-            color: white;
-            background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 rgb(147,219,251), stop: 1 rgb(82,169,248));
-            border-bottom-color: #C2C7CB; /* same as the pane color */
-            border-top-left-radius: 4px;
-            border-top-right-radius: 4px;
-            min-width: 8ex;
-            padding: 3px;
-        }
-        
-        QTabBar::tab:selected, QTabBar::tab:hover {
-            background: rgb(9,128,237);
-        }
-        """
-        StackFrameStyleSheet = """
-        QFrame {
-        background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop: 0 rgb(222,244,254), stop: 1 white);
-        border-width: 5px;
-        }
-        QPushButton {
-        border-style: outset;
-        border-width: 1px;
-        border-radius: 10px;
-        border-color: rgb(0, 103, 176);
-        font: bold 12px;
-        min-width: 8em;
-        padding: 6px;
-        background: white;
-        color: black;
-        }
-        QPushButton:hover{
-        color: blue
-        }
-        QPushButton:checked{
-        border-width: 2px;
-        
-        }
-        """#background: rgb(200,200,200)
+        MainWindowStyleSheet = strings.styleSheetMainWindow()
+        StackFrameStyleSheet = strings.styleSheetFrame()
         self.setStyleSheet(MainWindowStyleSheet)
         self.StackFrame.setStyleSheet(StackFrameStyleSheet)
        # self.colorButton.setStyleSheet('background: black; border-color: black;border-width: 1px;')
@@ -441,8 +221,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.ResultTableView.selectionModel().selectionChanged.connect(self.fillCurveList)
         self.ResultTableView.doubleClicked.connect(self.showResultDetails)
         #self.mdiArea.subWindowActivated.connect(self.updateToolbar) 
-         
-              
+
+        self.showMaximized()
+
         #------ START ROUTINE -----------------------------
         self.loadInitialFile()
         self.createStackView(0)
@@ -1290,6 +1071,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         create a dictionary with Materialnames and corresponding absolute path
         '''
         path = self.settings['MaterialDBPath']
+        if not os.path.isdir(path):
+            self.warning('Path to material database does not exist! Default directory is choosen. Some of your definitions may be changed.')
+            path = os.getcwd() + "\\materialDB"
         included_extenstions = ['dat']
         self.MaterialFiles = [fn for fn in os.listdir(path) if any([fn.endswith(ext) for ext in included_extenstions])]
         self.Materials = []
@@ -1482,15 +1266,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             for variable in self.batchVariables:
                 if variable[0] == 0:
                     # case of layer parametervariation
+                    print(variable[1])
                     for i, layer in enumerate(self.stack):
                         if layer.name == variable[1]:
                             stackIndex = i
-                            NamePart = layer.name 
+                            NamePart = layer.name
+                    self.createStackView(stackIndex)
                     if variable[2] == 'thickness':
                         parameter = 'self.on_layerThicknessSB_valueChanged(value)'
                         NamePart = NamePart + ' t = '
-                    elif variable[2] == 'roughness':
+                    elif variable[2] == 'roughness' and self.stack[stackIndex].srough == True:
                         parameter = 'self.on_sroughThicknessEdit_valueChanged(value)'#'self.stack[stackIndex].sroughThickness'
+                        NamePart = NamePart + ' rough t = '
+                    elif variable[2] == 'Haze R' and self.stack[stackIndex].srough == True:
+                        parameter = 'self.on_hazeRSlider_valueChanged(value)'#'self.stack[stackIndex].sroughThickness'
+                        NamePart = NamePart + ' rough t = '
+                    elif variable[2] == 'Haze T' and self.stack[stackIndex].srough == True:
+                        parameter = 'self.on_Ha_valueChanged(value)'#'self.stack[stackIndex].sroughThickness'
                         NamePart = NamePart + ' rough t = '
                     elif variable[2] == 'constant n' and self.stack[stackIndex].criSource == 'constant':
                         parameter = 'self.on_criConstantnEdit_valueChanged(value)'#'self.stack[stackIndex].criConstant[0]'
@@ -1881,12 +1673,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.stack=[]
                 self.StackNameEdit.setText(u.load())
                 self.settings = u.load()
+                self.loadMaterialDB()
                 self.defaults = u.load()
                 self.references = u.load()
                 lenStack = u.load()
                 for i in range(lenStack):
-                    loadElement = u.load()
-                    self.stack.append(loadElement)
+                    layer = u.load()
+                    self.stack.append(layer)
+                    # check for database entry
+                    if layer.criDBName not in self.Materials:
+                        self.warning('There is no DB entry for layer {}! Changed to {}.'.format(layer.name, self.Materials[0]))
+                        layer.criDBName = self.Materials[0]
+        
                 #self.stack.append(loadedStack)
                 self.createStackView(0)
                 file.close()
@@ -2233,14 +2031,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 except LoadError as e:
                     self.warning(e.msg)
                     self.createDefaultStack()
+                    self.fillSimulationOptions()
+                    self.loadMaterialDB()
                 
             else:
                 self.updateStatus("could not open last file: {}".format(self.lastFile))
                 self.createDefaultStack()
                 self.fillSimulationOptions()
+                self.loadMaterialDB()
         else:
             self.createDefaultStack()
             self.fillSimulationOptions()
+            self.loadMaterialDB()
 
             
     def createDefaultStack(self):
@@ -2249,10 +2051,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #layer0.thick = True
 		#self.stack = [layer0]
         #TODO: make sure these are in MateriaDB folder
-        layer0 = Layer('ZnO', 800, 'from database', criDBName = 'nZnO')
-        layer1 = Layer('InS', 45, 'from database', criDBName = 'InS')
-        layer2 = Layer('CIS', 1600, 'from database', criDBName = 'CIGS_00_MR')
-        layer3 = Layer('Mo', 200, 'from database', criDBName = 'Mo')
+        layer0 = Layer('ZnO', 800, 'from database', criDBName = 'nZnO_Richter_V1')
+        layer1 = Layer('InS', 45, 'from database', criDBName = 'CdS_Richter')
+        layer2 = Layer('CIS', 1600, 'from database', criDBName = 'CIS_Richter')
+        layer3 = Layer('Mo', 200, 'from database', criDBName = 'Mo_Richter')
         self.stack = [layer0, layer1, layer2, layer3]
         
     def showReferences(self):

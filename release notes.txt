@@ -1,0 +1,12 @@
+0.5.2
+
+Bugfixes
+--------
+
+- Scattering solver: on/off functionality of roughness affects modification of interface matrices
+
+- MaterialDB: add check if path to MaterialDB in loaded stack exists and check if layers are in this list, if not, first entry is selected
+
+- Batch Simulation: Only selected layer properties were changed -> fixed!
+
+- Maximize Window: fixed! 

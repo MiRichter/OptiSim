@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
 <!-- eric project file for project MOPSIT -->
-<!-- Saved: 2016-04-01, 16:15:16 -->
+<!-- Saved: 2016-05-01, 00:44:16 -->
 <!-- Copyright (C) 2016 Michael Richter, michael.richter@uni-oldenburg.de -->
 <Project version="5.1">
   <Language></Language>
@@ -24,10 +24,11 @@
     <Source>classes/resulttablemodel.py</Source>
     <Source>helpform.py</Source>
     <Source>main.py</Source>
-    <Source>makeBuild.py</Source>
+    <Source>strings.py</Source>
     <Source>ui/Ui_alpha.py</Source>
     <Source>ui/Ui_batchmenu.py</Source>
     <Source>ui/Ui_calculatedvalues.py</Source>
+    <Source>ui/Ui_color.py</Source>
     <Source>ui/Ui_config.py</Source>
     <Source>ui/Ui_defaults.py</Source>
     <Source>ui/Ui_dielectric_function.py</Source>
@@ -44,6 +45,7 @@
     <Source>ui/__init__.py</Source>
     <Source>ui/batchmenu.py</Source>
     <Source>ui/calculatedvalues.py</Source>
+    <Source>ui/color.py</Source>
     <Source>ui/config.py</Source>
     <Source>ui/defaults.py</Source>
     <Source>ui/dielectric_function.py</Source>
@@ -59,15 +61,13 @@
     <Source>ui/mplwidgetsimple.py</Source>
     <Source>ui/references.py</Source>
     <Source>ui/resultdetails.py</Source>
-    <Source>ui/Ui_color.py</Source>
-    <Source>ui/color.py</Source>
     <Source>ui/scientificspin.py</Source>
-    <Source>strings.py</Source>
   </Sources>
   <Forms>
     <Form>ui/alpha.ui</Form>
     <Form>ui/batchmenu.ui</Form>
     <Form>ui/calculatedvalues.ui</Form>
+    <Form>ui/color.ui</Form>
     <Form>ui/config.ui</Form>
     <Form>ui/defaults.ui</Form>
     <Form>ui/dielectric_function.ui</Form>
@@ -79,14 +79,11 @@
     <Form>ui/mainwindow.ui</Form>
     <Form>ui/references.ui</Form>
     <Form>ui/resultdetails.ui</Form>
-    <Form>ui/color.ui</Form>
   </Forms>
   <Translations/>
   <Resources/>
   <Interfaces/>
-  <Others>
-    <Other>icons</Other>
-  </Others>
+  <Others/>
   <MainScript>main.py</MainScript>
   <Vcs>
     <VcsType>None</VcsType>
