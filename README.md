@@ -18,12 +18,12 @@ Python 3.4.3 - PyQt 5.5.1 - Numpy 1.9.3 - Scipy 0.16.1 - Matplotlib 1.5.0 - Colo
 What else?
 ==========
 
-For detailed information see www.uni-oldenburg.de/lcp
+For detailed information see www.uni-oldenburg.de/physik/forschung/ehf/lcp/optisim/
 
 OptiSim is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the License for more details.
 
 Thanks to:
 ==========
 
-Volker Lorrmann for first ideas, Steven Byrnes' python tmm package for giving ideas, Mark Knees for python package Colorpy I took some lines from, 
+Volker Lorrmann for first ideas, Steven Byrnes' python tmm package for giving input especially for angle dependency, Mark Knees for python package Colorpy I took some lines from, 
 developer of ERIC IDE, and many more ... 
