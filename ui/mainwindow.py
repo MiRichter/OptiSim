@@ -4,7 +4,7 @@ import os
 import sys
 import traceback
 
-
+import matplotlib
 """
 Module implementing MainWindow.
 """
@@ -25,7 +25,8 @@ import qrc_resource
 import helpform
 import logging
 
-from scipy.optimize import curve_fit
+import scipy
+from scipy.optimize import minimize # minimize_scalar, basinhopping, curve_fit
 #import tmm.examples
 #from math import *
 
@@ -53,7 +54,7 @@ from classes.optics import Optics
 from classes.resulttablemodel import ResultTableModel
 from classes.navtoolbar import NavToolBar as NavigationToolbar
 
-__version__ = "0.5.2"
+__version__ = "0.5.3"
 
  
 def num(s):
@@ -724,6 +725,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             func = self.gradingFunctionInput.text()
             self.currentLayer.criGrading['mode'] = self.functionOk
             if self.functionOk == 'constant':
+                func = func.replace(',', '.')
+                self.gradingFunctionInput.setText(func)
                 self.currentLayer.criGrading['value'] = float(func)
             elif self.functionOk == 'linear':
                 self.linearExp.indexIn(func)
@@ -742,6 +745,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             func = self.colFunctionInput.text()
             self.currentLayer.collection['mode'] = self.functionOk
             if self.functionOk == 'constant':
+                func = func.replace(',', '.')
+                self.colFunctionInput.setText(func)
                 self.currentLayer.collection['value'] = float(func)
             elif self.functionOk == 'linear':
                 self.linearExp.indexIn(func)
@@ -1195,23 +1200,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         logging.info(strings.endLog(totalTime))
         
         self.onProgress(0)
-        logging.shutdown()
+        self.stopLogging()
         
     def simulate(self):
-        
-        logging.basicConfig(format='', filename='LogFile.log', filemode='w', level=logging.INFO) #format='%(asctime)s %(message)s'
-        logging.info(strings.startLog(__version__))
-        logging.info('\nStart simulating structure on {} ...'.format(time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())))
-        # log all settings
-        logging.info('\nsimulation settings:')
-        for setting, value in self.settings.items():
-            if setting == 'wavelength':
-                continue
-            if isinstance(value, list):
-                output = ', '.join(map(str, value))
-            else:
-                output = str(value)
-            logging.info('\t{}: {}'.format(setting, output))
+        self.startLogging()
             
         #try:
         input = LayerStack(self.StackName, self.stack, self.settings, self.getCRI)
@@ -1266,7 +1258,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             for variable in self.batchVariables:
                 if variable[0] == 0:
                     # case of layer parametervariation
-                    print(variable[1])
+                    #print(variable[1])
                     for i, layer in enumerate(self.stack):
                         if layer.name == variable[1]:
                             stackIndex = i
@@ -1320,7 +1312,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def fitThickness(self):
         #TODO: Nealder-Mead method?
         fitting = FittingThicknessDlg(self.stack, self.references, self)
+        
         if fitting.exec_():
+            if not self.resultlist:
+                self.warning('There should be at least one successful calcluation of the stack!')
+                return
+            self.startLogging()
+            logging.info('start fitting routine (thickness)...')
             self.layerToFit = fitting.selectedLayer
             t = self.stack[self.layerToFit].thickness
             xdata = self.settings['wavelength']
@@ -1339,13 +1337,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if data.mean() > 1: # check if given in %
                     data = data / 100
             else:
+                self.warning('No reference data found!')
                 return
             ydata = data
             # curve fitting (func, xdata, ydata, p0,
             self.noOfFitIterations = 0
             self.updateStatus('busy fitting ...')
+            
             try:
-                fitParams, fitCovariances = curve_fit(self.fitThicknessFunction, xdata, ydata, t, epsfcn = -0.01, maxfev=fitting.noOfIterations)#, sigma=2, 
+                #fitParams, fitCovariances = curve_fit(self.fitThicknessFunction, xdata, ydata, t, jac='3-point',  diff_step=0.01, method='trf', bounds=(0, 5000), max_nfev=fitting.noOfIterations)# , sigma=2,  epsfcn = -0.01,
+                minResult = minimize(self.fitThicknessFunctionMinimize, t, args = (xdata, ydata), method= fitting.method, options = {'maxiter' : fitting.noOfIterations}) #, tol=1e-6
+                #minResult = basinhopping(self.fitThicknessFunctionMinimize, t, minimizer_kwargs={'args': (xdata, ydata), 'method': fitting.method}, niter=10, stepsize = 20)
+                #minResult = minimize_scalar(self.fitThicknessFunctionMinimize, args = (xdata, ydata), method= 'Bounded', bounds=(500, 1000))
             except RuntimeError as e:
                 QtWidgets.QMessageBox.warning(self,
                     "fitting error",
@@ -1354,13 +1357,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
             self.updateStatus('Fitting requires {} iterations'.format(self.noOfFitIterations))
             
-            QtWidgets.QMessageBox.information(self,
-                    "Fitting result",
-                    'The optimized layer thickness of {} is {}'.format(self.stack[self.layerToFit].name, fitParams),
-                    QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Close))
+            #QtWidgets.QMessageBox.information(self,
+              #      "Fitting result",
+                #    'The optimized layer thickness of {} is {}.\n Covariances are {}'.format(self.stack[self.layerToFit].name, fitParams, fitCovariances),
+                  #  QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Close))
+            message = """The optimized layer thickness of {} is {:.2f} nm.\n
+            Details: {}\n
+            Number of Iterations: {}\n
+            Number of function calls: {}\n
+            Chi-square: {:7.4f}""".format(self.stack[self.layerToFit].name, minResult.x[0], minResult.message, minResult.nit, minResult.nfev, minResult.fun)
             
+            logging.info('\n' + 50 * '#' + '\n' + message + '\n do final calculation ...\n' + 50 * '#')
+                        
+            QtWidgets.QMessageBox.information(self, "Fitting result",message, QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Close))#,minResult.message
+            self.ShowLayerDetails()
             # plot result
-            toPlot = dict([('fit', self.fitThicknessFunction(xdata, fitParams)),
+            toPlot = dict([('fit', self.fitThicknessFunction(xdata, minResult.x)),
                             ('{}'.format(self.referenceToFit), ydata)])
             title = 'Fitting result'
             xRange = self.settings['wavelength']
@@ -1370,19 +1382,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.mdiArea.addSubWindow(PlotSubw)
             PlotSubw.show()
             
+            #print(minResult.fun)
+            logging.info('Fitting finished.')
+            self.stopLogging()
+            
             
     def fitThicknessFunction(self, xdata, t):
         #print(t)
         self.noOfFitIterations += 1
         self.stack[self.layerToFit].thickness = t
-        input = LayerStack(self.stack, self.settings, self.getCRI)   
+        input = LayerStack(self.StackName, self.stack, self.settings, self.getCRI)   
         self.StackName = self.checkStackName(self.StackNameEdit.text())
         optics = Optics(self.StackName, input, self.references, self.settings)
         optics.calcStack()
         if 'R' in self.referenceToFit:
-            return optics.R
+            return optics.RspectrumSystem
         elif 'T' in self.referenceToFit:
-            return optics.T
+            return optics.TspectrumSystem
         elif 'EQE' in self.referenceToFit:
             optics.calcFieldIntensity()
             optics.calcAbsorption()
@@ -1395,11 +1411,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             optics.calcEllipsometry()
             return optics.delta
         
-        
+    def fitThicknessFunctionMinimize(self, t, xdata, ydata):
+        #print(t)
+        self.noOfFitIterations += 1
+        self.stack[self.layerToFit].thickness = t
+        input = LayerStack(self.StackName, self.stack, self.settings, self.getCRI)   
+        self.StackName = self.checkStackName(self.StackNameEdit.text())
+        optics = Optics(self.StackName, input, self.references, self.settings)
+        optics.calcStack()
+        if 'R' in self.referenceToFit:
+            ref = optics.RspectrumSystem
+        elif 'T' in self.referenceToFit:
+            ref = optics.TspectrumSystem
+        elif 'EQE' in self.referenceToFit:
+            optics.calcFieldIntensity()
+            optics.calcAbsorption()
+            optics.calcQE()
+            ref = optics.EQE
+        elif 'psi' in self.referenceToFit:
+            optics.calcEllipsometry()
+            ref = optics.psi
+        elif 'delta' in self.referenceToFit:
+            optics.calcEllipsometry()
+            ref = optics.delta
+        return np.sum((((ref - ydata)/ydata))**2) 
         
     def fitDiffLength(self):
         fitting = FittingDiffusion(self.stack, self.references, self)
         if fitting.exec_():
+            if not self.resultlist:
+                self.warning('There should be at least one successful calcluation of the stack!')
+                return
+            self.startLogging()
+            logging.info('start fitting routine (diffusion length) ...')
             self.layerToFit = fitting.selectedLayer
             diffL = self.stack[self.layerToFit].collection['diffLength']
             #print(diffL)
@@ -1421,13 +1465,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if data.mean() > 1: # check if given in %
                     data = data / 100
             else:
+                self.warning('No reference data found!')
                 return
             ydata = data
             # curve fitting (func, xdata, ydata, p0,
             self.noOfFitIterations = 0
             self.updateStatus('busy fitting ...')
             try:
-                fitParams, fitCovariances = curve_fit(self.fitDiffLengthFunction, xdata, ydata, diffL, factor=20, epsfcn = 0.5, maxfev=fitting.noOfIterations) #ftol = 0.0001
+                #fitParams, fitCovariances = curve_fit(self.fitDiffLengthFunction, xdata, ydata, diffL, method='trf', bounds=(100, 4000), diff_step=100, max_nfev=fitting.noOfIterations) #ftol = 0.0001 factor=20, epsfcn = -0.01, 
+                minResult = minimize(self.fitDiffLengthFunctionMinimize, diffL, args = (xdata, ydata), method= fitting.method, options = {'maxiter' : fitting.noOfIterations}) #, tol=1e-6
+                
             except RuntimeError as e:
                 QtWidgets.QMessageBox.warning(self,
                     "fitting error",
@@ -1436,13 +1483,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
             self.updateStatus('Fitting requires {} iterations'.format(self.noOfFitIterations))
             
-            QtWidgets.QMessageBox.information(self,
-                    "Fitting result",
-                    'The optimized diffusion length of {} is {}'.format(self.stack[self.layerToFit].name, fitParams),
-                    QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Close))
+            message = """The optimized diffusion length of {} is {:7.2f} nm.\n
+            Details: {}\n
+            Number of Iterations: {}\n
+            Number of function calls: {}\n
+            Chi-square: {:7.4f}""".format(self.stack[self.layerToFit].name, minResult.x[0], minResult.message, minResult.nit, minResult.nfev, minResult.fun)
             
+            logging.info('\n' + 50 * '#' + '\n' + message + '\n do final calculation ...\n' + 50 * '#')
+            
+            QtWidgets.QMessageBox.information(self, "Fitting result", message, QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Close))
+            
+            self.ShowLayerDetails()
             # plot result
-            toPlot = dict([('fit', self.fitDiffLengthFunction(xdata, fitParams)),
+            toPlot = dict([('fit', self.fitDiffLengthFunction(xdata, minResult.x)),
                             ('{}'.format(self.referenceToFit), ydata)])
             title = 'Fitting result'
             xRange = self.settings['wavelength']
@@ -1452,19 +1505,40 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.mdiArea.addSubWindow(PlotSubw)
             PlotSubw.show()
             
+            logging.info('Fitting finished.')
+            self.stopLogging()
+            
         
     def fitDiffLengthFunction(self, xdata, diffL):
         #print(diffL)
         self.noOfFitIterations += 1
         self.stack[self.layerToFit].collection['diffLength'] = diffL
-        input = LayerStack(self.stack, self.settings, self.getCRI)   
-        self.StackName = self.checkStackName(self.StackNameEdit.text())
+        input = LayerStack(self.StackName,  self.stack, self.settings, self.getCRI)   
+        #self.StackName = self.checkStackName(self.StackNameEdit.text())
         optics = Optics(self.StackName, input, self.references, self.settings)
         optics.calcStack()
         optics.calcFieldIntensity()
         optics.calcAbsorption()
         optics.calcQE()
         return optics.EQE
+        
+    def fitDiffLengthFunctionMinimize(self, diffL, xdata, ydata):
+        #print(diffL)
+        self.noOfFitIterations += 1
+        self.stack[self.layerToFit].collection['diffLength'] = diffL
+        self.stack[self.layerToFit].makeXcollection()
+        self.plotCollectionFunction()
+        input = LayerStack(self.StackName,  self.stack, self.settings, self.getCRI)   
+        #self.StackName = self.checkStackName(self.StackNameEdit.text())
+        optics = Optics(self.StackName, input, self.references, self.settings)
+        optics.calcStack()
+        optics.calcFieldIntensity()
+        optics.calcAbsorption()
+        optics.calcQE()
+        ref = optics.EQE
+        result = np.sum(((ref - ydata)/ydata)**2) 
+        #print(result)
+        return result
         
     def addResult(self, currentresult):
         self.resultlist.append(currentresult)
@@ -1717,6 +1791,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.resultlist:
             color = ColorDlg(self.resultlist, self)
             color.exec_()
+            pass
         else:
             self.updateStatus('no results found!')
             
@@ -2122,6 +2197,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     "Warning",
                     message,
                     QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Close))
+    
+    
+    def startLogging(self):
+        logging.basicConfig(format='', filename='LogFile.log', filemode='w', level=logging.INFO) #format='%(asctime)s %(message)s'
+        logging.info(strings.startLog(__version__))
+        logging.info('\nStart simulating structure on {} ...'.format(time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())))
+        # log all settings
+        logging.info('\nsimulation settings:')
+        for setting, value in self.settings.items():
+            if setting == 'wavelength':
+                continue
+            if isinstance(value, list):
+                output = ', '.join(map(str, value))
+            else:
+                output = str(value)
+            logging.info('\t{}: {}'.format(setting, output))
+       
+    def stopLogging(self):
+        logging.shutdown()
+        
+    
+    
     
     @pyqtSlot()
     def  on_TMMexamplePB_clicked(self):

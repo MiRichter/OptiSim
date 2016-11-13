@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'L:\05_Python\OptiSim V0.4.0\ui\fitting_diffusion.ui'
+# Form implementation generated from reading ui file 'D:\Work\04_Python\OptiSim\OptiSim\ui\fitting_diffusion.ui'
 #
-# Created: Fri Nov 20 10:38:58 2015
-#      by: PyQt5 UI code generator 5.4
+# Created by: PyQt5 UI code generator 5.5.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(290, 121)
+        Dialog.resize(340, 153)
         self.verticalLayout = QtWidgets.QVBoxLayout(Dialog)
         self.verticalLayout.setObjectName("verticalLayout")
         self.formLayout = QtWidgets.QFormLayout()
@@ -34,10 +33,16 @@ class Ui_Dialog(object):
         self.noOfIterationsSB.setMaximum(9999)
         self.noOfIterationsSB.setProperty("value", 100)
         self.noOfIterationsSB.setObjectName("noOfIterationsSB")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.noOfIterationsSB)
+        self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.noOfIterationsSB)
         self.label_3 = QtWidgets.QLabel(Dialog)
         self.label_3.setObjectName("label_3")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_3)
+        self.formLayout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_3)
+        self.methodCB = QtWidgets.QComboBox(Dialog)
+        self.methodCB.setObjectName("methodCB")
+        self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.methodCB)
+        self.label_4 = QtWidgets.QLabel(Dialog)
+        self.label_4.setObjectName("label_4")
+        self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_4)
         self.verticalLayout.addLayout(self.formLayout)
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -56,6 +61,7 @@ class Ui_Dialog(object):
         self.label.setText(_translate("Dialog", "Layer:"))
         self.label_2.setText(_translate("Dialog", "Fit to:"))
         self.label_3.setText(_translate("Dialog", "max. Number of iterations:"))
+        self.label_4.setText(_translate("Dialog", "Method:"))
 
 
 if __name__ == "__main__":

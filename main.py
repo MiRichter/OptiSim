@@ -1,6 +1,7 @@
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication, QSplashScreen, QMessageBox
+from PyQt5.QtGui import QIcon, QPixmap
 
+#from multiprocessing import Pool
 
 from ui.mainwindow import MainWindow, __version__
 
@@ -11,7 +12,7 @@ import time
 import traceback
 import io
 import os
-from PyQt5 import QtGui, QtWidgets
+#from PyQt5 import QtGui, QtWidgets, QtCore
 
 
 def excepthook(excType, excValue, tracebackobj):
@@ -46,21 +47,29 @@ def excepthook(excType, excValue, tracebackobj):
         f.close()
     except IOError:
         pass
-    errorbox = QtWidgets.QMessageBox()
+    errorbox = QMessageBox()
     errorbox.setText(str(notice)+str(msg))
     errorbox.exec_()
     
 sys.excepthook = excepthook
-
+   
 def main():
-
     app = QApplication(sys.argv)
     app.setOrganizationName("University of Oldenburg")
     app.setOrganizationDomain("www.uni-oldenburg.de")
     app.setApplicationName("OptiSim")
     app.setWindowIcon(QIcon(":/OS_logo.png"))
+    
+    # Create and display the splash screen
+    #splash_pix = QPixmap(":/OS_logo.png")
+    #splash = QSplashScreen(splash_pix, QtCore.Qt.WindowStaysOnTopHint)
+    #splash.setMask(splash_pix.mask())
+    #splash.show()
+    #app.processEvents()
+    
     wnd = MainWindow()
     wnd.show()
+    #splash.finish(wnd)
     sys.exit(app.exec_())
 
 if __name__ == '__main__':

@@ -131,7 +131,12 @@ class Optics:
                         ('collection layerwise LB (%) ', []), 
                         ('collection layerwise LB (mA/cm²) ', []),
                         ('calc. time (s)', 0), 
-                        ('creation time (s)', layerstack.creationTime)
+                        ('creation time (s)', layerstack.creationTime),
+                        ('Chi Square R', 0),
+                        #('costFunc2', 0),
+                        #('costFunc3', 0), 
+                        ('Chi Square EQE', 0)
+                        #('costFunc2EQE', 0)
                         ])
         self.stackname = stackname
         self.layerstack = layerstack
@@ -208,8 +213,10 @@ class Optics:
                         self.addPlot({name: data}, 'spectra', 'total A,R,T')
                 if name == 'T reference' and path[1]:
                     self.addPlot({name: data}, 'spectra', 'total A,R,T')
+                    self.T_reference = data
                 if name == 'EQE reference' and path[1]:
                     self.addPlot({name: data},'spectra', 'QE')
+                    self.EQE_reference = data
                 if name == 'psi reference' and path[1]:
                     self.addPlot({name: data}, 'spectra', 'Ellipsometry')
                 if name == 'delta reference' and path[1]:
@@ -613,7 +620,7 @@ class Optics:
                 H_R01 = 0
                 H_T01 = 0
                 
-            print('H_T_{} = {}'.format(key, H_T01))
+            #print('H_T_{} = {}'.format(key, H_T01))
             if k == 0:
                 cri0 = 1 + 0j
                 theta0 = self.layerstack.theta0
@@ -956,9 +963,20 @@ class Optics:
         self.addPlot({'reflection': self.RspectrumSystem})
         self.addPlot({'transmission': self.TspectrumSystem})
         
+        # calc deviation from reference
+        if 'R reference' in self.references:
+           # costFunc1 = np.sum(((self.R_reference-self.RspectrumSystem))**2)
+          #  costFunc2 = np.sum((self.RspectrumSystem*(self.R_reference-self.RspectrumSystem))**2)            
+            costFunc3 = np.sum(((self.RspectrumSystem - self.R_reference)/self.R_reference)**2)
+            self.scalars['Chi Square R'] = costFunc3 
+        
         self.scalars['absorbance (%)'] = AnumSys * 100 #'%.4f' % 
         self.scalars['reflectance (%)'] = RnumSys * 100
         self.scalars['transmittance (%)'] = TnumSys * 100
+                     
+        
+        #self.scalars['costFunc2'] = costFunc2  
+        #self.scalars['costFunc3'] = costFunc3 
         
         # the following is not correct,  because it depends on spectrum
         #self.scalars['absorbance (mA/cm²)'] = AnumSys * self.Jmax 
@@ -1154,6 +1172,16 @@ class Optics:
             self.EQE = self.EQE + np.abs(self.LayerResults[name].collected)
         self.addPlot({'EQE': self.EQE}, 'spectra', 'QE')
         self.addPlot({'IQE': self.EQE/np.abs(self.AspectrumSystem)}, 'spectra', 'QE')
+        
+         # calc deviation from reference
+        if 'EQE reference' in self.references:
+         #   costFunc1EQE = np.sum(((self.EQE_reference-self.EQE))**2)
+          #  costFunc2EQE = np.sum((self.EQE*(self.EQE_reference-self.EQE))**2) 
+            costFunc3EQE = np.sum(((self.EQE - self.EQE_reference)/self.EQE_reference)**2)
+        
+           # self.scalars['costFunc1EQE'] = costFunc1EQE 
+            self.scalars['Chi Square EQE'] = costFunc3EQE 
+        
         logging.info('\tcalculation of quantum efficiency finished.')
         
     def calcGeneration(self):

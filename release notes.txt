@@ -1,4 +1,33 @@
-0.5.2
+0.5.3 (2016/11/13)
+
+Functionality
+-------------
+
+- update numpy to numpy-1.11.2rc1+mkl (from http://www.lfd.uci.edu/~gohlke/pythonlibs/)
+- update scipy to scipy-0.18.1 (from http://www.lfd.uci.edu/~gohlke/pythonlibs/) --> better fitting functions
+
+- Fitting tool: fitting enabled, 
+- Fitting tool: added logging fuctionality
+
+- calculation: add Chi-Square values for R and EQE reference 
+- Logging: seperate functions to start and stop logging
+
+
+Bugfixes
+--------
+
+- Fitting tool: include getCRI function in layerstack call
+- Fitting tool: Difflength fit repair recalculation of makeCollection
+- catch ','-'.' error in user defined feunction for grading and collection function 
+
+Build
+-----
+
+- use pyinstaller to freeze app
+
+###################
+
+0.5.2 (2016/08/08)
 
 Bugfixes
 --------

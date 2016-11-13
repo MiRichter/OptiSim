@@ -13,7 +13,7 @@ How to run?
 Easiest way is via Eric IDE. Just run the project file.
 
 For execution the following site-packages are necessary:
-Python 3.4.3 - PyQt 5.5.1 - Numpy 1.9.3 - Scipy 0.16.1 - Matplotlib 1.5.0 - Colorpy 0.1.0 for Python 3
+Python 3.4.3 - PyQt 5.5.1 - Numpy 1.11 - Scipy 0.18.1 - Matplotlib 1.5.0 - Colorpy 0.1.0 for Python 3
 
 What else?
 ==========
@@ -21,6 +21,14 @@ What else?
 For detailed information see www.uni-oldenburg.de/physik/forschung/ehf/lcp/optisim/
 
 OptiSim is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the License for more details.
+
+Support?
+========
+When publishing research results gained from or analyzed with help of OptiSim at conferences, in journal papers or in other type of contributions please cite a reference to one of the following publications:
+
+M. Richter, M. S. Hammer, T. Sonnet, J. Parisi, Bandgap extraction from quantum efficiency spectra of Cu(In,Ga)Se2 solar cells with varied grading profile and diffusion length, Thin Solid Films in press (2016), DOI 10.1016/j.tsf.2016.08.022.
+
+
 
 Thanks to:
 ==========

@@ -31,8 +31,14 @@ class FittingDiffusion(QDialog, Ui_Dialog):
             if value[0] and key == 'EQE reference':
                 self.references.append(key)
                 
+        methods = ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP']
+         # with Jacobian necessary: 'Newton-CG', 'dogleg',  'trust-ncg'
+        self.method = methods[0]
+        
         self.layersCB.addItems(self.layers)
         self.referencesCB.addItems(self.references)
+        self.methodCB.addItems(methods)
+        self.methodCB.setCurrentIndex(0)
         self.selectedLayer = 0
         self.selectedReference = self.references[0]
         self.noOfIterations = 100
@@ -49,3 +55,7 @@ class FittingDiffusion(QDialog, Ui_Dialog):
     @pyqtSlot(int)
     def on_noOfIterationsSB_valueChanged(self, p0):
         self.noOfIterations = p0
+    
+    @pyqtSlot(str)
+    def on_methodCB_currentIndexChanged(self, p0):
+       self.method = p0

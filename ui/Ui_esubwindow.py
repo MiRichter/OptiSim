@@ -6,8 +6,7 @@ from classes.navtoolbar import NavToolBar as NavigationToolbar
 from classes.navtoolbar import DraggableLegend
 
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.mlab import griddata
+#from matplotlib.mlab import griddata
 #from scipy.interpolate import griddata
 
 def format_coord(x, y):
