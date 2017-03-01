@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\Work\04_Python\OptiSim V0.5.0_alpha\ui\config.ui'
+# Form implementation generated from reading ui file 'D:\Work\04_Python\OptiSim\OptiSim\ui\config.ui'
 #
 # Created by: PyQt5 UI code generator 5.5.1
 #
@@ -83,6 +83,7 @@ class Ui_Dialog(object):
         self.horizontalLayout_10 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_10.setObjectName("horizontalLayout_10")
         self.dial_2 = QtWidgets.QDial(self.groupBox_5)
+        self.dial_2.setEnabled(False)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -104,6 +105,7 @@ class Ui_Dialog(object):
         self.label_5.setObjectName("label_5")
         self.horizontalLayout_10.addWidget(self.label_5)
         self.polSB = QtWidgets.QSpinBox(self.groupBox_5)
+        self.polSB.setEnabled(False)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -330,7 +332,7 @@ class Ui_Dialog(object):
         self.verticalLayout_4.addWidget(self.buttonBox)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         self.buttonBox.accepted.connect(Dialog.accept)
         self.buttonBox.rejected.connect(Dialog.reject)
         self.dial_2.valueChanged['int'].connect(self.polSB.setValue)

@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'L:\__current work__\04_Python\OptiSim V0.4.1\ui\extractbandgap.ui'
+# Form implementation generated from reading ui file 'L:\__current work__\04_Python\OptiSim\OptiSim\ui\extractbandgap.ui'
 #
-# Created: Fri Jan 15 15:51:24 2016
-#      by: PyQt5 UI code generator 5.4
+# Created by: PyQt5 UI code generator 5.6
 #
 # WARNING! All changes made in this file will be lost!
 

@@ -176,7 +176,8 @@ class Optics:
         
         
         self.references = references
-        self.createReferenceCurves()
+        self.referenceLoaded = False
+        #self.createReferenceCurves() # started externally
         #self.calcAllMatrices()
         
         
@@ -219,8 +220,12 @@ class Optics:
                     self.EQE_reference = data
                 if name == 'psi reference' and path[1]:
                     self.addPlot({name: data}, 'spectra', 'Ellipsometry')
+                    self.psi_reference = data
                 if name == 'delta reference' and path[1]:
                     self.addPlot({name: data}, 'spectra', 'Ellipsometry')
+                    self.delta_reference = data
+                    
+                self.referenceLoaded = True
                     
                     
     def makeSpectrum(self):
@@ -964,7 +969,7 @@ class Optics:
         self.addPlot({'transmission': self.TspectrumSystem})
         
         # calc deviation from reference
-        if 'R reference' in self.references:
+        if self.references['R reference'][0] and self.references['R reference'][1] and self.referenceLoaded: 
            # costFunc1 = np.sum(((self.R_reference-self.RspectrumSystem))**2)
           #  costFunc2 = np.sum((self.RspectrumSystem*(self.R_reference-self.RspectrumSystem))**2)            
             costFunc3 = np.sum(((self.RspectrumSystem - self.R_reference)/self.R_reference)**2)
@@ -1174,7 +1179,7 @@ class Optics:
         self.addPlot({'IQE': self.EQE/np.abs(self.AspectrumSystem)}, 'spectra', 'QE')
         
          # calc deviation from reference
-        if 'EQE reference' in self.references:
+        if self.references['EQE reference'][0] and self.references['EQE reference'][1] and self.referenceLoaded:
          #   costFunc1EQE = np.sum(((self.EQE_reference-self.EQE))**2)
           #  costFunc2EQE = np.sum((self.EQE*(self.EQE_reference-self.EQE))**2) 
             costFunc3EQE = np.sum(((self.EQE - self.EQE_reference)/self.EQE_reference)**2)

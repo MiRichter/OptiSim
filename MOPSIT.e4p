@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
 <!-- eric project file for project MOPSIT -->
-<!-- Saved: 2016-05-01, 00:44:16 -->
-<!-- Copyright (C) 2016 Michael Richter, michael.richter@uni-oldenburg.de -->
+<!-- Saved: 2017-02-26, 22:48:40 -->
+<!-- Copyright (C) 2017 Michael Richter, michael.richter@uni-oldenburg.de -->
 <Project version="5.1">
   <Language></Language>
   <Hash>3e4a4f1744e5b1e4a613405adae1d22508113d8b</Hash>
   <ProgLanguage mixed="0">Python3</ProgLanguage>
   <ProjectType>PyQt5</ProjectType>
-  <Description></Description>
   <Version>0.1</Version>
   <Author>Michael Richter</Author>
   <Email>michael.richter@uni-oldenburg.de</Email>
-  <Eol index="-1"/>
   <Sources>
     <Source>__init__.py</Source>
     <Source>classes/__init__.py</Source>
+    <Source>classes/advancedFittingTreeModel.py</Source>
     <Source>classes/errors.py</Source>
     <Source>classes/layer.py</Source>
     <Source>classes/layerstack.py</Source>
@@ -35,10 +34,12 @@
     <Source>ui/Ui_econtroller.py</Source>
     <Source>ui/Ui_esubwindow.py</Source>
     <Source>ui/Ui_extractbandgap.py</Source>
+    <Source>ui/Ui_fitting_advanced.py</Source>
     <Source>ui/Ui_fitting_diffusion.py</Source>
     <Source>ui/Ui_fitting_thickness.py</Source>
     <Source>ui/Ui_gradingfiles.py</Source>
     <Source>ui/Ui_mainwindow.py</Source>
+    <Source>ui/Ui_mainwindow_tool.py</Source>
     <Source>ui/Ui_references.py</Source>
     <Source>ui/Ui_resultdetails.py</Source>
     <Source>ui/Ui_subwindow.py</Source>
@@ -51,6 +52,7 @@
     <Source>ui/dielectric_function.py</Source>
     <Source>ui/econtroller.py</Source>
     <Source>ui/extractbandgap.py</Source>
+    <Source>ui/fitting_advanced.py</Source>
     <Source>ui/fitting_diffusion.py</Source>
     <Source>ui/fitting_thickness.py</Source>
     <Source>ui/gradingfiles.py</Source>
@@ -73,10 +75,12 @@
     <Form>ui/dielectric_function.ui</Form>
     <Form>ui/econtroller.ui</Form>
     <Form>ui/extractbandgap.ui</Form>
+    <Form>ui/fitting_advanced.ui</Form>
     <Form>ui/fitting_diffusion.ui</Form>
     <Form>ui/fitting_thickness.ui</Form>
     <Form>ui/gradingfiles.ui</Form>
     <Form>ui/mainwindow.ui</Form>
+    <Form>ui/mainwindow_tool.ui</Form>
     <Form>ui/references.ui</Form>
     <Form>ui/resultdetails.ui</Form>
   </Forms>
@@ -187,9 +191,6 @@
         </value>
       </dict>
     </VcsOptions>
-    <VcsOtherData>
-      <dict/>
-    </VcsOtherData>
   </Vcs>
   <FiletypeAssociations>
     <FiletypeAssociation pattern="*.idl" type="INTERFACES"/>

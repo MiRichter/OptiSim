@@ -8,7 +8,7 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QDialog
 
 from .Ui_fitting_diffusion import Ui_Dialog
-
+from classes.advancedFittingTreeModel import TreeOfParametersModel
 
 class FittingDiffusion(QDialog, Ui_Dialog):
     """

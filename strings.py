@@ -195,9 +195,29 @@ def styleSheetMainWindow():
             padding: 3px;
         }
         
-        QTabBar::tab:selected, QTabBar::tab:hover {
+        QTabBar::tab:selected {
             background: rgb(9,128,237);
         }
+        QTabBar::tab:hover {
+            background: rgb(9,128,237);
+        }
+        QToolBox::tab {
+            color: white;
+            background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                    stop: 0 rgb(147,219,251), stop: 1 rgb(82,169,248));
+            border-bottom-color: #C2C7CB; /* same as the pane color */
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            min-width: 8ex;
+            padding: 3px;
+        }
+        
+        QToolBox::tab:selected {
+            background: rgb(9,128,237);
+        } 
+        QTabBar::tab:hover {
+            background: blue;
+        }        
         """
         
 def styleSheetFrame():

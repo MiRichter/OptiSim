@@ -51,7 +51,7 @@ def excepthook(excType, excValue, tracebackobj):
     errorbox.setText(str(notice)+str(msg))
     errorbox.exec_()
     
-sys.excepthook = excepthook
+#sys.excepthook = excepthook
    
 def main():
     app = QApplication(sys.argv)

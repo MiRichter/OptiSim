@@ -1,3 +1,16 @@
+0.6.0 (2017/03/01)
+
+Functionality
+-------------
+
+- add advanced fitting tool
+
+Bugfixes
+--------
+
+- dielectric function: flip nk-arrays for correct interpolation if spectrum is different compared to settings
+
+
 0.5.3 (2016/11/13)
 
 Functionality

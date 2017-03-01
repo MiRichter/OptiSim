@@ -16,6 +16,93 @@ from scipy import integrate
 from classes.errors import *
 from classes.navtoolbar import NavToolBar, DraggableLegend
 
+MODELS = { 'Gaussian' : {  'parameter': ['Amp', 'En', 'Br'], 
+                                        'defaults': [1, 3, 0.2], 
+                                        'function': 'Amp*exp(-((eV-En)/(Br/(2*sqrt(log(2)))))**2) - Amp*exp(-((eV+En)/(Br/(2*sqrt(log(2)))))**2)'}, 
+                        'Drude' :  {  'parameter': ['Amp', 'Br'], 
+                                        'defaults': [1, 0.2], 
+                                        'function': '(Amp*Br)/(eV**2+complex(0, Br*eV))'},
+                        'Lorentz' :  {  'parameter': ['Amp', 'En', 'Br'], 
+                                        'defaults': [1, 3, 0.2], 
+                                        'function': '(Amp*Br*En)/(En**2-eV**2-complex(0, Br*eV))'},  
+                        'Tauc-Lorentz' :  {  'parameter': ['Amp', 'En', 'C', 'Eg'], 
+                                        'defaults': [20, 4, 0.5, 3.5], 
+                                        'function': '(Amp*C*En*(eV-Eg)**2)/(eV*((eV**2-En**2)**2+C**2*eV**2))'}, 
+                        'Cody-Lorentz' :  {  'parameter': ['Amp', 'En', 'Br', 'Eg', 'Ep', 'Et', 'Eu'], 
+                                        'defaults': [20, 4, 0.1, 2.5, 1, 0, 0.5], 
+                                        'function': ['(((eV-Eg)**2)/((eV-Eg)**2+Ep**2)) * (Amp*En*Br*eV)/((eV**2-En**2)**2+Br**2*eV**2)', 
+                                                    '(Et*(((eV-Eg)**2)/((eV-Eg)**2+Ep**2)) * (Amp*En*Br*eV)/((eV**2-En**2)**2+Br**2*eV**2)/eV)*exp((eV-Eg-Et)/Eu)'
+                                                    ]}
+                                        }
+
+def calcFunction(dielectricFunction):
+    models = MODELS
+    oscillators = dielectricFunction['oscillators']
+    eV = np.linspace(  dielectricFunction['spectral range'][0],
+                            dielectricFunction['spectral range'][1], 
+                            100)
+
+    dielectricFunction['wvl'] = 1239.941 / eV
+    
+    e_offset = dielectricFunction['e0']
+    e = e_offset
+    for osci in oscillators:
+        if osci['active']:
+            name = osci['name']
+            for i, value in enumerate(osci['values']):
+                string = '{} = {}'.format(models[name]['parameter'][i], value)
+                exec(string)
+            if name in ['Drude', 'Lorentz']:
+                e_osci = ne.evaluate(models[name]['function'])
+            else:
+                if name == 'Tauc-Lorentz': # 0 for E > Eg, function for <= Eg
+                    e2_osci = np.zeros(len(eV))
+                    e2_func = ne.evaluate(models[name]['function'])
+                    e2_osci[eV > osci['values'][3]] = e2_func[eV > osci['values'][3]]
+                elif name == 'Cody-Lorentz': # function 1 for E > (Eg+Et), function2 for 0<E<=(Eg+Et)
+                    e2_osci = np.zeros(len(eV))
+                    e2_func1 = ne.evaluate(models[name]['function'][0])
+                    e2_func2 = ne.evaluate(models[name]['function'][1])
+                    e2_osci[eV > osci['values'][3] + osci['values'][5]] = e2_func1[eV > osci['values'][3] + osci['values'][5]]
+                    e2_osci[eV <= osci['values'][3] + osci['values'][5]] = e2_func2[eV <= osci['values'][3] + osci['values'][5]]
+                    
+                else: # e.g. Gaussian
+                    e2_osci = ne.evaluate(models[name]['function'])
+                    
+                e1_osci = KKR(e2_osci, eV)
+                e_osci = e1_osci + 1j * e2_osci
+                
+            e = e + e_osci
+            e1 = np.real(e)
+            e2 = np.imag(e)
+            
+            dielectricFunction['n'] = (0.5 * (e1 + (e1**2 + e2**2)**0.5))**0.5
+            dielectricFunction['k'] = (0.5 * (-e1 + (e1**2 + e2**2)**0.5))**0.5
+    return e1,  e2, dielectricFunction, eV
+
+def KKR(e2, eV):
+    '''
+    KKR e1(E) = 2/pi P integral_0ûnendl(E'e2(E) dE'/(E'^2-E^2)) + 1
+    
+    '''
+    
+    E = eV
+    e1 = np.zeros(len(eV))
+    
+    # first element is computed without integrating the first energy value
+    e1[0] = 1 + (2 / np.pi) * integrate.trapz(E[1:-1] * e2[1:-1] / (E[1:-1]**2 - E[0])) * (E[3]-E[2])
+    
+    #e1[-1] = 1 + (2 / np.pi) * integrate.trapz(E[0:-2] * e2[0:-2] / (E[0:-2]**2 - E[-1]))
+    
+    
+    for i in range(1, len(E)):
+        e1_part1 = integrate.trapz(E[0:i-1] * e2[0:i-1] / (E[0:i-1]**2 - E[i]**2))
+        e1_part2 = integrate.trapz(E[i+1:-1] * e2[i+1:-1] / (E[i+1:-1]**2 - E[i]**2))
+        
+        e1[i] = 1 + (2 / np.pi) * (e1_part1 + e1_part2) * (E[3]-E[2])
+        
+    return e1
+
 def num(s):
     try:
         return int(s)
@@ -24,6 +111,9 @@ def num(s):
             return float(s)
         except ValueError:
             raise LoadError('Can not convert string {} into number!'.format(s))
+
+
+
 
 class dielectricFunctionDlg(QDialog, Ui_Dialog):
     """
@@ -47,25 +137,7 @@ class dielectricFunctionDlg(QDialog, Ui_Dialog):
         self.possibleOscillators = ['Gaussian', 'Drude', 'Lorentz', 'Tauc-Lorentz', 'Cody-Lorentz']
         self.oscillatorComboB.addItems(self.possibleOscillators)
         
-        self.models = { 'Gaussian' : {  'parameter': ['Amp', 'En', 'Br'], 
-                                        'defaults': [1, 3, 0.2], 
-                                        'function': 'Amp*exp(-((eV-En)/(Br/(2*sqrt(log(2)))))**2) - Amp*exp(-((eV+En)/(Br/(2*sqrt(log(2)))))**2)'}, 
-                        'Drude' :  {  'parameter': ['Amp', 'Br'], 
-                                        'defaults': [1, 0.2], 
-                                        'function': '(Amp*Br)/(eV**2+complex(0, Br*eV))'},
-                        'Lorentz' :  {  'parameter': ['Amp', 'En', 'Br'], 
-                                        'defaults': [1, 3, 0.2], 
-                                        'function': '(Amp*Br*En)/(En**2-eV**2-complex(0, Br*eV))'},  
-                        'Tauc-Lorentz' :  {  'parameter': ['Amp', 'En', 'C', 'Eg'], 
-                                        'defaults': [20, 4, 0.5, 3.5], 
-                                        'function': '(Amp*C*En*(eV-Eg)**2)/(eV*((eV**2-En**2)**2+C**2*eV**2))'}, 
-                        'Cody-Lorentz' :  {  'parameter': ['Amp', 'En', 'Br', 'Eg', 'Ep', 'Et', 'Eu'], 
-                                        'defaults': [20, 4, 0.1, 2.5, 1, 0, 0.5], 
-                                        'function': ['(((eV-Eg)**2)/((eV-Eg)**2+Ep**2)) * (Amp*En*Br*eV)/((eV**2-En**2)**2+Br**2*eV**2)', 
-                                                    '(Et*(((eV-Eg)**2)/((eV-Eg)**2+Ep**2)) * (Amp*En*Br*eV)/((eV**2-En**2)**2+Br**2*eV**2)/eV)*exp((eV-Eg-Et)/Eu)'
-                                                    ]}
-                                        }
-
+        self.models = MODELS
         
         self.currentSelection = 0
         self.referenceFlag = False
@@ -181,46 +253,7 @@ class dielectricFunctionDlg(QDialog, Ui_Dialog):
         self.opticalConstantsPlot.showCurves(1239.94051/self.eV, {'n': self.dielectricFunction['n'] , 'k': self.dielectricFunction['k'] }, 'wavelength (nm)', 'optical constants')
         
     def calcFunction(self):
-        self.eV = np.linspace(  self.dielectricFunction['spectral range'][0],
-                                self.dielectricFunction['spectral range'][1], 
-                                100)
-        eV = self.eV
-        self.dielectricFunction['wvl'] = 1239.941 / eV
-        
-        e_offset = self.dielectricFunction['e0']
-        e = e_offset
-        for osci in self.oscillators:
-            if osci['active']:
-                name = osci['name']
-                for i, value in enumerate(osci['values']):
-                    string = '{} = {}'.format(self.models[name]['parameter'][i], value)
-                    exec(string)
-                if name in ['Drude', 'Lorentz']:
-                    e_osci = ne.evaluate(self.models[name]['function'])
-                else:
-                    if name == 'Tauc-Lorentz': # 0 for E > Eg, function for <= Eg
-                        e2_osci = np.zeros(len(eV))
-                        e2_func = ne.evaluate(self.models[name]['function'])
-                        e2_osci[eV > osci['values'][3]] = e2_func[eV > osci['values'][3]]
-                    elif name == 'Cody-Lorentz': # function 1 for E > (Eg+Et), function2 for 0<E<=(Eg+Et)
-                        e2_osci = np.zeros(len(eV))
-                        e2_func1 = ne.evaluate(self.models[name]['function'][0])
-                        e2_func2 = ne.evaluate(self.models[name]['function'][1])
-                        e2_osci[eV > osci['values'][3] + osci['values'][5]] = e2_func1[eV > osci['values'][3] + osci['values'][5]]
-                        e2_osci[eV <= osci['values'][3] + osci['values'][5]] = e2_func2[eV <= osci['values'][3] + osci['values'][5]]
-                        
-                    else: # e.g. Gaussian
-                        e2_osci = ne.evaluate(self.models[name]['function'])
-                        
-                    e1_osci = self.KKR(e2_osci)
-                    e_osci = e1_osci + 1j * e2_osci
-                    
-                e = e + e_osci
-                self.e1 = np.real(e)
-                self.e2 = np.imag(e)
-                
-                self.dielectricFunction['n'] = (0.5 * (self.e1 + (self.e1**2 + self.e2**2)**0.5))**0.5
-                self.dielectricFunction['k'] = (0.5 * (-self.e1 + (self.e1**2 + self.e2**2)**0.5))**0.5
+        self.e1, self.e2, self.dielectricFunction, self.eV = calcFunction(self.dielectricFunction)
 
     
     @pyqtSlot(float)
@@ -236,31 +269,6 @@ class dielectricFunctionDlg(QDialog, Ui_Dialog):
         self.endeVLabel.setText('{} nm'.format(eV))
         self.dielectricFunction['spectral range'][1] = p0
         self.plotFunction()
-    
-    
-    
-    def KKR(self, e2):
-        '''
-        KKR e1(E) = 2/pi P integral_0ûnendl(E'e2(E) dE'/(E'^2-E^2)) + 1
-        
-        '''
-        
-        E = self.eV
-        e1 = np.zeros(len(self.eV))
-        
-        # first element is computed without integrating the first energy value
-        e1[0] = 1 + (2 / np.pi) * integrate.trapz(E[1:-1] * e2[1:-1] / (E[1:-1]**2 - E[0])) * (E[3]-E[2])
-        
-        #e1[-1] = 1 + (2 / np.pi) * integrate.trapz(E[0:-2] * e2[0:-2] / (E[0:-2]**2 - E[-1]))
-        
-        
-        for i in range(1, len(E)):
-            e1_part1 = integrate.trapz(E[0:i-1] * e2[0:i-1] / (E[0:i-1]**2 - E[i]**2))
-            e1_part2 = integrate.trapz(E[i+1:-1] * e2[i+1:-1] / (E[i+1:-1]**2 - E[i]**2))
-            
-            e1[i] = 1 + (2 / np.pi) * (e1_part1 + e1_part2) * (E[3]-E[2])
-            
-        return e1
     
     @pyqtSlot()
     def on_loadReference_clicked(self):

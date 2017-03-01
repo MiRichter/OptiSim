@@ -30,7 +30,7 @@ from scipy.optimize import minimize # minimize_scalar, basinhopping, curve_fit
 #import tmm.examples
 #from math import *
 
-from .Ui_mainwindow import Ui_MainWindow
+from .Ui_mainwindow_tool import Ui_MainWindow
 from .Ui_subwindow import Subwindow
 from .Ui_esubwindow import ESubwindow
 from .calculatedvalues import ConfigTableViewWidget
@@ -42,6 +42,7 @@ from .dielectric_function import dielectricFunctionDlg
 from .batchmenu import BatchDlg
 from .fitting_thickness import FittingThicknessDlg
 from .fitting_diffusion import FittingDiffusion
+from .fitting_advanced import FittingAdvancedDlg
 from .extractbandgap import ExtractBandgapDlg
 from .color import ColorDlg
 
@@ -54,7 +55,7 @@ from classes.optics import Optics
 from classes.resulttablemodel import ResultTableModel
 from classes.navtoolbar import NavToolBar as NavigationToolbar
 
-__version__ = "0.5.3"
+__version__ = "0.6.0"
 
  
 def num(s):
@@ -228,7 +229,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #------ START ROUTINE -----------------------------
         self.loadInitialFile()
         self.createStackView(0)
-        self.tabWidget.setCurrentIndex(0)
+        #self.tabWidget.setCurrentIndex(0)
         self.dirty = False
 
     def createActions(self):
@@ -290,6 +291,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fitDiffLengthAction = self.createAction("fit &diffusion length ...", self.fitDiffLength, 
                 None, 'fit_D', 
                 "opens menu to perform diffusion length fitting")
+        self.fitAdvancedAction = self.createAction("&advanced fitting ...", self.fitAdvanced, 
+                None, None, "opens menu to perform advenced fitting")
         
         # ----------- Config Menu
         self.configOpenAction = self.createAction("&Simulation properties", self.showConfig,
@@ -351,7 +354,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.addActions(simulationMenu, (self.runAction, self.defineBatchAction, self.runBatchAction, None))
         
         fittingMenu = self.menuBar.addMenu("&Fitting")
-        self.addActions(fittingMenu, (self.fitThicknessAction, self.fitDiffLengthAction, None))
+        self.addActions(fittingMenu, (self.fitThicknessAction, self.fitDiffLengthAction, self.fitAdvancedAction, None))
         
         configMenu = self.menuBar.addMenu("S&ettings")
         self.addActions(configMenu, (self.configOpenAction, None))
@@ -968,9 +971,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             layer.k = np.ones(len(wvl)) * k
             return
         elif layer.criSource == 'dielectric function':
-            layer.n = layer.dielectricFunction['n']
-            layer.k = layer.dielectricFunction['k']
-            layer.wavelength =  layer.dielectricFunction['wvl']
+            layer.n = layer.dielectricFunction['n'][::-1]
+            layer.k = layer.dielectricFunction['k'][::-1]
+            layer.wavelength =  layer.dielectricFunction['wvl'][::-1]
             return
             
         elif layer.criSource == 'graded':
@@ -1075,6 +1078,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         look for files in directory MaterialDB
         create a dictionary with Materialnames and corresponding absolute path
         '''
+        #TODO: check differen cwd at other os
         path = self.settings['MaterialDBPath']
         if not os.path.isdir(path):
             self.warning('Path to material database does not exist! Default directory is choosen. Some of your definitions may be changed.')
@@ -1217,6 +1221,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         logging.info('\ncalculate optics...\n')
         
         currentOptics = Optics(self.StackName, input, self.references, self.settings)
+        currentOptics.createReferenceCurves()
         self.onProgress(10)
         
         length = len(self.defaults['calculations'])
@@ -1418,6 +1423,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         input = LayerStack(self.StackName, self.stack, self.settings, self.getCRI)   
         self.StackName = self.checkStackName(self.StackNameEdit.text())
         optics = Optics(self.StackName, input, self.references, self.settings)
+        #optics.createReferenceCurves() #not needed
         optics.calcStack()
         if 'R' in self.referenceToFit:
             ref = optics.RspectrumSystem
@@ -1539,6 +1545,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         result = np.sum(((ref - ydata)/ydata)**2) 
         #print(result)
         return result
+        
+    def fitAdvanced(self):
+        fitting = FittingAdvancedDlg(self.stack, self.references, self.StackNameEdit.text(), self.settings, self.getCRI,self)
+        
+        if fitting.exec_():
+            self.stack = fitting.stack
+            self.createStackView(self.selectedLayer)
+            
+            
         
     def addResult(self, currentresult):
         self.resultlist.append(currentresult)
@@ -1747,6 +1762,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.stack=[]
                 self.StackNameEdit.setText(u.load())
                 self.settings = u.load()
+                # check if path of materialDB is available on machine
+                if not os.path.isdir(self.settings['MaterialDBPath']):
+                    self.warning('Could not find path of material data base: {}\nPlease select correct directory.'.format(self.settings['MaterialDBPath']))
+                    DirName = QtWidgets.QFileDialog.getExistingDirectory(self, 'select a folder containing the nk files', os.getcwd()+'\\materialDB')
+                    if DirName:
+                        self.settings['MaterialDBPath'] = DirName
+                    else:
+                        self.settings['MaterialDBPath'] = os.getcwd()+'\\materialDB'
                 self.loadMaterialDB()
                 self.defaults = u.load()
                 self.references = u.load()
