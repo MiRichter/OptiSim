@@ -140,6 +140,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         plots = [0] # indices of plotOPtions
         
         scalars = ['reflectance (%)', 'transmittance (%)', 'absorbance (%)']
+        
         self.defaults = dict([
                         ('scalars', scalars), 
                         ('plots', plots), 
@@ -1771,7 +1772,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     else:
                         self.settings['MaterialDBPath'] = os.getcwd()+'\\materialDB'
                 self.loadMaterialDB()
-                self.defaults = u.load()
+                defaults = u.load()
+                # check for old sclaar value from release 5.3 (costfunc values etc)
+                if 'costFunc2' in defaults['scalars'] or 'costFunc3' in defaults['scalars'] or 'costFunc' in defaults['scalars']:
+                    pass
+                else:
+                    self.defaults = defaults
+                    
+                        #('costFunc2EQE', 0)'
                 self.references = u.load()
                 lenStack = u.load()
                 for i in range(lenStack):
@@ -2149,9 +2157,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #layer0.thick = True
 		#self.stack = [layer0]
         #TODO: make sure these are in MateriaDB folder
-        layer0 = Layer('ZnO', 800, 'from database', criDBName = 'nZnO_Richter_V1')
-        layer1 = Layer('InS', 45, 'from database', criDBName = 'CdS_Richter')
-        layer2 = Layer('CIS', 1600, 'from database', criDBName = 'CIS_Richter')
+        layer0 = Layer('ZnO', 200, 'from database', criDBName = 'nZnO_Richter_V1')
+        layer1 = Layer('CdS', 60, 'from database', criDBName = 'CdS_Richter')
+        layer2 = Layer('CIS', 2000, 'from database', criDBName = 'CIS_Richter')
         layer3 = Layer('Mo', 200, 'from database', criDBName = 'Mo_Richter')
         self.stack = [layer0, layer1, layer2, layer3]
         
@@ -2184,6 +2192,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.progressBar.setValue(i)
 
     def updateFileMenu(self):
+        #TODO: icon, action not running
         self.fileMenu.clear()
         self.addActions(self.fileMenu, self.fileMenuActions[:-1])
         current = self.fileName
